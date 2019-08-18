@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/out_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/b11"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/b12"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/b13"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/b21"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/b22"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/b23"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/b31"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/b32"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+
+            <Button
+                android:id="@+id/b33"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:textSize="30sp"
+                android:text=" " />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/new_game"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Game" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/rg1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp" >
+        <RadioButton
+            android:id="@+id/rb1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/player"
+            android:checked="true"/>
+        <RadioButton
+            android:id="@+id/rb2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/computer"/>
+    </RadioGroup>
+
+    <android.support.v7.widget.AppCompatCheckBox
+        android:id="@+id/cb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/rg1"
+        android:layout_below="@+id/rg1"
+        android:text="@string/first_step" />
+
+    <RadioGroup
+        android:id="@+id/rg2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/rg1"
+        android:layout_below="@+id/cb">
+
+        <RadioButton
+            android:id="@+id/rb3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/easy" />
+
+        <RadioButton
+            android:id="@+id/rb4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hard" />
+    </RadioGroup>
+
+</RelativeLayout>
