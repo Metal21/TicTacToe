@@ -9,78 +9,78 @@ import java.util.List;
 public class GameField {
 
     private final int size = 3;
-    private  Point[][] point;
-    private PointCombination[] comb;
+    private  Cell[][] cells;
+    private CellCombs[] combs;
     private Gui gui;
 
     public GameField(Gui gui) {
         this.gui =gui;
-        point = new Point[size][size];
+        cells = new Cell[size][size];
         for (int l = 0; l != size; l++)
-            for (int c = 0; c != size; c++) point[l][c] = new Point(l,c);
+            for (int c = 0; c != size; c++) cells[l][c] = new Cell(l,c);
 
-        comb = new PointCombination[8];
+        combs = new CellCombs[8];
         for (int l = 0, c = 0; l < 6; l++, c++) {
-            if (l < 3) comb[l] = new PointCombination(point[l][0], point[l][1], point[l][2]);
+            if (l < 3) combs[l] = new CellCombs(cells[l][0], cells[l][1], cells[l][2]);
             if (l == 3) c = 0;
-            if (l >= 3) comb[l] = new PointCombination(point[0][c], point[1][c], point[2][c]);
+            if (l >= 3) combs[l] = new CellCombs(cells[0][c], cells[1][c], cells[2][c]);
         }
-        comb[6] = new PointCombination(point[0][0], point[1][1], point[2][2]);
-        comb[7] = new PointCombination(point[0][2], point[1][1], point[2][0]);
+        combs[6] = new CellCombs(cells[0][0], cells[1][1], cells[2][2]);
+        combs[7] = new CellCombs(cells[0][2], cells[1][1], cells[2][0]);
     }
 
     /*** Работа с клетками ***/
-    public boolean isEmpty(int l, int c) {
-        return point[l][c].value == Point.NONE;
+    public boolean isEmptyCell(int l, int c) {
+        return cells[l][c].value == Cell.NONE;
     }
 
-    public void pick(int what,int l, int c) {
-        point[l][c].value = what;
-        if(what == Point.X)gui.setX(l,c);
+    public void setCell(int what, int l, int c) {
+        cells[l][c].value = what;
+        if(what == Cell.X)gui.setX(l,c);
         else gui.setO(l,c);
     }
 
-    public void pick(int what,Point p) {
-        pick(what,p.l,p.c);
+    public void setCell(int what, Cell p) {
+        setCell(what,p.l,p.c);
     }
 
-    public int collPick() {
-        final List<Point> list = new ArrayList<>();
+    public int quantitySetCells() {
+        final List<Cell> list = new ArrayList<>();
         iterator(new IteratorLambda() {
-            public void item(Point p) {
-                if (p.value != Point.NONE) list.add(p);
+            public void item(Cell p) {
+                if (p.value != Cell.NONE) list.add(p);
             }
         });
         return list.size();
     }
 
-    public void clear() {
+    public void clearCells() {
         iterator(new IteratorLambda() {
-            public void item(Point p) {
-                p.value = Point.NONE;
+            public void item(Cell p) {
+                p.value = Cell.NONE;
             }
         });
-        gui.clear();
+        gui.clearAll();
     }
 
-    public PointCombination[] getComb() { return comb; }
+    public CellCombs[] getCombs() { return combs; }
 
     /*** Проверка победителя, конца игры ***/
     public int checkWinner(){
-        int winner = Point.NONE;
-        for(PointCombination pn:comb){
-            if(pn.coll(Point.X)==size){winner = Point.X;break;}
-            if(pn.coll(Point.O)==size){winner = Point.O;break;}
+        int winner = Cell.NONE;
+        for(CellCombs pn: combs){
+            if(pn.quantity(Cell.X)==size){winner = Cell.X;break;}
+            if(pn.quantity(Cell.O)==size){winner = Cell.O;break;}
         }
         return winner;
     }
 
-    public boolean hasGap(){ return collPick()<(size*size); }
+    public boolean hasGap(){ return quantitySetCells()<(size*size); }
 
     /*** Сохранение и загрузка состояния ***/
     public void saveData(final LinkedList<Integer> dataInt) {
         iterator(new IteratorLambda() {
-            public void item(Point p) {
+            public void item(Cell p) {
                 dataInt.add(p.value);
             }
         });
@@ -88,10 +88,10 @@ public class GameField {
 
     public void addData(final LinkedList<Integer> dataInt){
         iterator(new IteratorLambda() {
-            public void item(Point p) {
+            public void item(Cell p) {
                 p.value = dataInt.removeFirst();
-                if(p.value == Point.X)gui.setX(p.l,p.c);
-                if(p.value == Point.O)gui.setO(p.l,p.c);
+                if(p.value == Cell.X)gui.setX(p.l,p.c);
+                if(p.value == Cell.O)gui.setO(p.l,p.c);
             }
         });
     }
@@ -99,10 +99,10 @@ public class GameField {
     private void iterator(IteratorLambda il){
         for(int l = 0;l < 3;l++)
             for(int c = 0;c < 3;c++)
-                il.item( point[l][c]);
+                il.item( cells[l][c]);
         }
 
     interface IteratorLambda{
-        void item(Point b);
+        void item(Cell b);
     }
 }

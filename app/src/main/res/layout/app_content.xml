@@ -15,7 +15,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/out_info"
+                android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
@@ -30,21 +30,21 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
 
             <Button
                 android:id="@+id/b12"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
 
             <Button
                 android:id="@+id/b13"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
         </LinearLayout>
 
         <LinearLayout
@@ -57,21 +57,21 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
 
             <Button
                 android:id="@+id/b22"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
 
             <Button
                 android:id="@+id/b23"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
         </LinearLayout>
 
         <LinearLayout
@@ -84,21 +84,21 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
 
             <Button
                 android:id="@+id/b32"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
 
             <Button
                 android:id="@+id/b33"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:textSize="30sp"
-                android:text=" " />
+                android:onClick="fieldClick"/>
         </LinearLayout>
 
         <LinearLayout
@@ -110,7 +110,7 @@
                 android:id="@+id/new_game"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Game" />
+                android:text="@string/new_game" />
         </LinearLayout>
 
 

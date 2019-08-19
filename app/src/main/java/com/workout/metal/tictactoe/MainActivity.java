@@ -15,7 +15,7 @@ import com.workout.metal.tictactoe.game.connect.GameEvent;
 
 public class MainActivity extends AppCompatActivity implements GameEvent, RadioGroup.OnCheckedChangeListener {
 
-    private final static String TITLE       = "title";
+    private final static String TITLE       = "tl";
     private final static String ENGINE_INT  = "ei";
     private final static String ENGINE_BOOL = "eb";
     private final static String P_ENEMY     = "pe";
@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
     private TicTacToe mTicTacToe;
     private Button newGame;
     private TextView title;
+    private GuiVersion1 gui;
 
     private RadioGroup rg1;
     private RadioGroup rg2;
@@ -37,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.new_content);
+        setContentView(R.layout.app_content);
         newGame = findViewById(R.id.new_game);
         newGame.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
                 else title.setText(R.string.player_vs_computer);
             }
         });
-        title = findViewById(R.id.out_info);
+        title = findViewById(R.id.title);
 
         rg1 = findViewById(R.id.rg1);
         rg2 = findViewById(R.id.rg2);
@@ -66,9 +67,8 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
             }
         });
 
-        GuiVersion1 gui = new GuiVersion1(this);
+        gui = new GuiVersion1(this);
         mTicTacToe = new TicTacToe(gui,this);
-        gui.setGame(mTicTacToe);
 
         if(bundle==null){
             enemy = TicTacToe.PLAYER;
@@ -86,6 +86,11 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
                     bundle.getBooleanArray(ENGINE_BOOL)
             );
         }
+    }
+
+    public void fieldClick(View view){
+        int[]lc = gui.onClick(view);
+        mTicTacToe.fieldClick(lc[0],lc[1]);
     }
 
     public void gameEvent(int type) {

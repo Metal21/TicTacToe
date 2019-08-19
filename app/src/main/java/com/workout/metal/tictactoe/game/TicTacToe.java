@@ -6,14 +6,14 @@ import com.workout.metal.tictactoe.game.computer.CompHard;
 import com.workout.metal.tictactoe.game.connect.GameEvent;
 import com.workout.metal.tictactoe.game.connect.Gui;
 import com.workout.metal.tictactoe.game.field.GameField;
-import com.workout.metal.tictactoe.game.field.Point;
+import com.workout.metal.tictactoe.game.field.Cell;
 
 import java.util.LinkedList;
 
 public class TicTacToe {
 
-    public static final int PLAYER = 1;
-    public static final int COMPUTER = 2;
+    public static final int PLAYER     = 1;
+    public static final int COMPUTER   = 2;
     public static final int LEVEL_EASY = 3;
     public static final int LEVEL_HARD = 4;
 
@@ -21,38 +21,38 @@ public class TicTacToe {
     private int level;
     private boolean firstStepComputer;
 
-    private GameEvent mGameEvent;
+    private GameEvent gameEvent;
     private Computer comp;
-    private GameField mField;
+    private GameField field;
 
     private boolean isGame;//идет ли в данный момент партия
-    private boolean stepX;//
+    private boolean stepX;//в режиме PLAYER с помощью этой переменной определяется, чья очередб ходить
 
-    public TicTacToe(Gui gui, GameEvent mGameEvent) {
-        this.mGameEvent = mGameEvent;
-        mField = new GameField(gui);
+    public TicTacToe(Gui gui, GameEvent gameEvent) {
+        this.gameEvent = gameEvent;
+        field = new GameField(gui);
     }
 
     /*** Событие ввода  ***/
-    public void event(int l, int c) {
-        if(!isGame||!mField.isEmpty(l,c))return;
+    public void fieldClick(int l, int c) {
+        if(!isGame||!field.isEmptyCell(l,c))return;
         switch (enemy){
             case PLAYER:
-                if(stepX)mField.pick(Point.X,l,c);
-                else mField.pick(Point.O,l,c);
+                if(stepX) field.setCell(Cell.X,l,c);
+                else field.setCell(Cell.O,l,c);
                 checkWin();
                 stepX = !stepX;
                 break;
             case COMPUTER:
-                int pc = Point.O,hum = Point.X;
+                int pc = Cell.O,hum = Cell.X;
                 if(firstStepComputer){
                     pc = hum;
-                    hum = Point.O;
+                    hum = Cell.O;
                 }
-                mField.pick(hum,l,c);
+                field.setCell(hum,l,c);
                 checkWin();
                 if(isGame){
-                    comp.stepComputer(mField,pc,hum);
+                    comp.stepComputer(field,pc,hum);
                     checkWin();
                 }
                 break;
@@ -60,32 +60,32 @@ public class TicTacToe {
     }
 
     private void checkWin(){
-        int winner = mField.checkWinner();
-        if(winner != Point.NONE){
-            if(winner == Point.X){
-                if(enemy == PLAYER) mGameEvent.gameEvent(GameEvent.WINNER_PLAYER_X);
+        int winner = field.checkWinner();
+        if(winner != Cell.NONE){
+            if(winner == Cell.X){
+                if(enemy == PLAYER) gameEvent.gameEvent(GameEvent.WINNER_PLAYER_X);
                 else {
-                    if(firstStepComputer)mGameEvent.gameEvent(GameEvent.WINNER_COMPUTER);
-                    else mGameEvent.gameEvent(GameEvent.WINNER_PLAYER);
+                    if(firstStepComputer) gameEvent.gameEvent(GameEvent.WINNER_COMPUTER);
+                    else gameEvent.gameEvent(GameEvent.WINNER_PLAYER);
                 }
             } else {
-                if(enemy == PLAYER) mGameEvent.gameEvent(GameEvent.WINNER_PLAYER_O);
+                if(enemy == PLAYER) gameEvent.gameEvent(GameEvent.WINNER_PLAYER_O);
                 else {
-                    if(!firstStepComputer)mGameEvent.gameEvent(GameEvent.WINNER_COMPUTER);
-                    else mGameEvent.gameEvent(GameEvent.WINNER_PLAYER);
+                    if(!firstStepComputer) gameEvent.gameEvent(GameEvent.WINNER_COMPUTER);
+                    else gameEvent.gameEvent(GameEvent.WINNER_PLAYER);
                 }
             }
             isGame = false;
             return;
         }
-        if(!mField.hasGap()){
-            mGameEvent.gameEvent(GameEvent.NO_SPACE);
+        if(!field.hasGap()){
+            gameEvent.gameEvent(GameEvent.NO_SPACE);
             isGame = false;
         }
     }
 
     /*** Управление игрой
-     * после установки(изменения) параметров противника нужно вызвать метод newGame***/
+     * после установки(изменения) параметров противника нужно вызвать метод newGame()***/
     public void vsPlayer(){
         isGame = false;
         enemy = PLAYER;
@@ -103,10 +103,10 @@ public class TicTacToe {
     }
 
     public void newGame(){
-        mField.clear();
+        field.clearCells();
         stepX = true;
         isGame = true;
-        if(enemy == COMPUTER&&firstStepComputer)comp.stepComputer(mField,Point.X,Point.O);
+        if(enemy == COMPUTER&&firstStepComputer)comp.stepComputer(field, Cell.X, Cell.O);
     }
 
     /*** Сохранение и загрузка состояния ***/
@@ -114,7 +114,7 @@ public class TicTacToe {
         LinkedList<Integer> dataInt = new LinkedList<>();
         dataInt.add(enemy);
         dataInt.add(level);
-        mField.saveData(dataInt);
+        field.saveData(dataInt);
         int [] array = new int[dataInt.size()];
         for (int i = 0; i < array.length; i++) array[i] = dataInt.get(i);
         return new Object[]{array,new boolean[]{isGame,stepX,firstStepComputer}};
@@ -128,7 +128,7 @@ public class TicTacToe {
         int level = dataInt[1];
         LinkedList<Integer> list = new LinkedList<>();
         for(int i = 2;i < dataInt.length;i++)list.add(dataInt[i]);
-        mField.addData(list);
+        field.addData(list);
 
         switch (enemy){
             case PLAYER:  vsPlayer();break;

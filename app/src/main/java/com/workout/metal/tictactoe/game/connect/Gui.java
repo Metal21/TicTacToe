@@ -6,6 +6,6 @@ public interface Gui {
 
     void setO(int line,int column);
 
-    void clear();
+    void clearAll();
 
 }

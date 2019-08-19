@@ -1,10 +1,12 @@
 package com.workout.metal.tictactoe.game.computer;
 
 import com.workout.metal.tictactoe.game.field.GameField;
-import com.workout.metal.tictactoe.game.field.Point;
-import com.workout.metal.tictactoe.game.field.PointCombination;
+import com.workout.metal.tictactoe.game.field.Cell;
+import com.workout.metal.tictactoe.game.field.CellCombs;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 public class CompEasy implements Computer {
@@ -12,31 +14,22 @@ public class CompEasy implements Computer {
 
     public void stepComputer(GameField field, int comp, int hum) {
 
-        Point p;
-        PointCombination[] comb = field.getComb();
+        CellCombs[] combs = field.getCombs();
         //Если есть поле с двумя 'comp',ставлю третий
-        for (PointCombination pc : comb) { if (pc.coll(comp) == 2 && pc.coll(hum) == 0) { field.pick(comp,pc.getPoint());return; } }
+        for (CellCombs comb : combs) { if (comb.quantity(comp) == 2 && comb.quantity(hum) == 0) { field.setCell(comp,comb.getCell());return; } }
         //Если есть поле с двумя 'hum',не даю противнику поставить третий
-        for (PointCombination pc : comb) { if (pc.coll(hum) == 2 && pc.coll(comp) == 0) { field.pick(comp,pc.getPoint());return; } }
+        for (CellCombs comb : combs) { if (comb.quantity(hum) == 2 && comb.quantity(comp) == 0) { field.setCell(comp,comb.getCell());return; } }
 
-        LinkedList<Integer> listComb = new LinkedList<>();
-        Random rand = new Random();
-        while(listComb.size()<8){
-            int a = rand.nextInt(8);
-            if(!listComb.contains(a))listComb.add(a);
-        }
-        LinkedList<PointCombination> randComb = new LinkedList<>();
-        for(int a:listComb)randComb.add(comb[a]);
-
+        List<CellCombs> randCombs = getRandomCombs(combs);
         //Ставлю 'comp' в поле, где уже есть 1
-        for (int i = 7; i >= 0; i--) {if (comb[i].coll(comp) == 1 && comb[i].coll(hum) == 0) {field.pick(comp,getPoint(comb[i]));return;}}
+        for (CellCombs comb : randCombs) {if (comb.quantity(comp) == 1 && comb.quantity(hum) == 0) {field.setCell(comp, getCell(comb));return;}}
         //Ставлю 'comp' в пустое поле
-        for (int i = 7; i >= 0; i--) {if (comb[i].coll(comp) == 0 && comb[i].coll(hum) == 0) {field.pick(comp,getPoint(comb[i]));return;}}
+        for (CellCombs comb : randCombs) {if (comb.quantity(comp) == 0 && comb.quantity(hum) == 0) {field.setCell(comp, getCell(comb));return;}}
         //Ставлю 'comp' в оставшиеся клетки
-        for (PointCombination pc : comb) {if (pc.isClearPoint()) {field.pick(comp,pc.getPoint());return;}}
+        for (CellCombs comb : randCombs) {if (comb.isEmptyCell()) {field.setCell(comp,comb.getCell());return;}}
     }
 
-    private Point getPoint(PointCombination pc) {
+    private Cell getCell(CellCombs pc) {
         LinkedList<Integer> list = new LinkedList<>();
         Random rand = new Random();
         while(list.size()<3){
@@ -45,11 +38,23 @@ public class CompEasy implements Computer {
         }
         while(list.size()>0){
             switch(list.removeFirst()){
-                case 0:if (pc.C.value == Point.NONE) return pc.C;break;
-                case 1:if (pc.A.value == Point.NONE) return pc.A;break;
-                case 2:if (pc.B.value == Point.NONE) return pc.B;break;
+                case 0:if (pc.C.value == Cell.NONE) return pc.C;break;
+                case 1:if (pc.A.value == Cell.NONE) return pc.A;break;
+                case 2:if (pc.B.value == Cell.NONE) return pc.B;break;
             }
         }
         return null;
+    }
+
+    private List<CellCombs> getRandomCombs(CellCombs[] combs){
+        List<Integer> listComb = new ArrayList<>();
+        Random rand = new Random();
+        while(listComb.size()<8){
+            int a = rand.nextInt(8);
+            if(!listComb.contains(a))listComb.add(a);
+        }
+        List<CellCombs> randCombs = new ArrayList<>();
+        for(int a:listComb)randCombs.add(combs[a]);
+        return randCombs;
     }
 }

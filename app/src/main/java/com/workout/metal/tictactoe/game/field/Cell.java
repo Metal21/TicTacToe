@@ -1,6 +1,6 @@
 package com.workout.metal.tictactoe.game.field;
 
-public class Point {
+public class Cell {
 
     public final static int NONE = 0;
     public final static int X = 1;
@@ -9,5 +9,5 @@ public class Point {
     public int value;// 0 - none 1 - X 2 - O
     public int l,c;
 
-    Point(int l,int c){this.l = l;this.c = c;}
+    Cell(int l, int c){this.l = l;this.c = c;}
 }
