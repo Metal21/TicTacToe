@@ -4,69 +4,54 @@ import android.view.View;
 import android.widget.Button;
 
 import com.workout.metal.tictactoe.game.connect.Gui;
+import com.workout.metal.tictactoe.game.field.GameField;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiVersion1 implements Gui {
 
-    private Button[][] buttons;
+    private final List<CellView> views;
 
     public GuiVersion1(MainActivity context) {
-        buttons = new Button[3][3];
-        buttons[0][0] = context.findViewById(R.id.b11);
-        buttons[0][1] = context.findViewById(R.id.b12);
-        buttons[0][2] = context.findViewById(R.id.b13);
-
-        buttons[1][0] = context.findViewById(R.id.b21);
-        buttons[1][1] = context.findViewById(R.id.b22);
-        buttons[1][2] = context.findViewById(R.id.b23);
-
-        buttons[2][0] = context.findViewById(R.id.b31);
-        buttons[2][1] = context.findViewById(R.id.b32);
-        buttons[2][2] = context.findViewById(R.id.b33);
+        views = new ArrayList<>();
+        for(int l = 0;l < GameField.size;l++)
+            for(int c = 0;c < GameField.size;c++){
+                String nameId = "b"+l+String.valueOf(c);
+                int viewId = context.getResources().getIdentifier(nameId, "id", context.getPackageName());;
+                views.add(new CellView(context.findViewById(viewId),l,c));
+            }
     }
 
-    public int[] onClick(final View view) {
-        final int [] ret = new int[2];
-        iterator(new IteratorLambda() {
-            public boolean item(Button b, int l, int c) {
-                if(b == view){
-                    ret[0] = l;
-                    ret[1] = c;
-                    return true;
-                }
-                return false;
-            }
-        });
-        return ret;
+    public CellView onClick(final View v) {
+        for(CellView view:views)if(view.view == v)return view;
+        return null;
     }
 
     public void setX(int line, int column) {
-        buttons[line][column].setText("X");
+        for(CellView view:views)if(view.isMine(line,column)){view.view.setText("X");break;}
     }
 
     public void setO(int line, int column) {
-        buttons[line][column].setText("O");
+        for(CellView view:views)if(view.isMine(line,column)){view.view.setText("O");break;}
     }
 
     public void clearAll() {
-        iterator(new IteratorLambda() {
-            public boolean item(Button b, int l, int c) {
-                b.setText(" ");
-                return false;
-            }
-        });
+        for(CellView view:views)view.view.setText("");
     }
 
-    private void iterator(IteratorLambda il){
-        boolean exit = false;
-        for(int l = 0;l < 3;l++){
-            for(int c = 0;c < 3;c++){
-                exit = il.item( buttons[l][c],l,c);
-            }
-            if(exit)break;
+    class CellView {
+
+        final Button view;
+        final int l;
+        final int c;
+
+        CellView(View view, int l, int c) {
+            this.view = (Button) view;
+            this.l    = l;
+            this.c    = c;
         }
-    }
 
-    interface IteratorLambda{
-        boolean item(Button b,int l,int c);
+        boolean isMine(int line, int column){return l == line&&c == column;}
     }
 }

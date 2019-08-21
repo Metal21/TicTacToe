@@ -2,11 +2,13 @@ package com.workout.metal.tictactoe.game.connect;
 
 public interface GameEvent {
 
-    int WINNER_PLAYER_X = 1;
-    int WINNER_PLAYER_O = 2;
-    int WINNER_PLAYER = 3;
-    int WINNER_COMPUTER = 4;
-    int NO_SPACE = 5;
+    enum Event{
+        WINNER_PLAYER_X,
+        WINNER_PLAYER_O,
+        WINNER_PLAYER,
+        WINNER_COMPUTER,
+        NO_SPACE
+    }
 
-    void gameEvent(int type);
+    void gameEvent(Event event);
 }

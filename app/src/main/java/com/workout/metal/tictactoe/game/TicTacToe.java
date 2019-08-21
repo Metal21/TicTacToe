@@ -10,6 +10,8 @@ import com.workout.metal.tictactoe.game.field.Cell;
 
 import java.util.LinkedList;
 
+import static com.workout.metal.tictactoe.game.connect.GameEvent.Event.*;
+
 public class TicTacToe {
 
     public static final int PLAYER     = 1;
@@ -19,11 +21,11 @@ public class TicTacToe {
 
     private int enemy;
     private int level;
-    private boolean firstStepComputer;
+    private boolean firstStepComp;
 
-    private GameEvent gameEvent;
+    private final GameEvent gameEvent;
     private Computer comp;
-    private GameField field;
+    private final GameField field;
 
     private boolean isGame;//идет ли в данный момент партия
     private boolean stepX;//в режиме PLAYER с помощью этой переменной определяется, чья очередб ходить
@@ -44,15 +46,15 @@ public class TicTacToe {
                 stepX = !stepX;
                 break;
             case COMPUTER:
-                int pc = Cell.O,hum = Cell.X;
-                if(firstStepComputer){
-                    pc = hum;
-                    hum = Cell.O;
+                int pc = Cell.O,human = Cell.X;
+                if(firstStepComp){
+                    pc = human;
+                    human = Cell.O;
                 }
-                field.setCell(hum,l,c);
+                field.setCell(human,l,c);
                 checkWin();
                 if(isGame){
-                    comp.stepComputer(field,pc,hum);
+                    comp.stepComputer(field,pc,human);
                     checkWin();
                 }
                 break;
@@ -63,23 +65,23 @@ public class TicTacToe {
         int winner = field.checkWinner();
         if(winner != Cell.NONE){
             if(winner == Cell.X){
-                if(enemy == PLAYER) gameEvent.gameEvent(GameEvent.WINNER_PLAYER_X);
+                if(enemy == PLAYER) gameEvent.gameEvent(WINNER_PLAYER_X);
                 else {
-                    if(firstStepComputer) gameEvent.gameEvent(GameEvent.WINNER_COMPUTER);
-                    else gameEvent.gameEvent(GameEvent.WINNER_PLAYER);
+                    if(firstStepComp) gameEvent.gameEvent(WINNER_COMPUTER);
+                    else gameEvent.gameEvent(WINNER_PLAYER);
                 }
             } else {
-                if(enemy == PLAYER) gameEvent.gameEvent(GameEvent.WINNER_PLAYER_O);
+                if(enemy == PLAYER) gameEvent.gameEvent(WINNER_PLAYER_O);
                 else {
-                    if(!firstStepComputer) gameEvent.gameEvent(GameEvent.WINNER_COMPUTER);
-                    else gameEvent.gameEvent(GameEvent.WINNER_PLAYER);
+                    if(!firstStepComp) gameEvent.gameEvent(WINNER_COMPUTER);
+                    else gameEvent.gameEvent(WINNER_PLAYER);
                 }
             }
             isGame = false;
             return;
         }
-        if(!field.hasGap()){
-            gameEvent.gameEvent(GameEvent.NO_SPACE);
+        if(!field.isSpace()){
+            gameEvent.gameEvent(NO_SPACE);
             isGame = false;
         }
     }
@@ -95,7 +97,7 @@ public class TicTacToe {
         isGame = false;
         enemy = COMPUTER;
         level = compLevel;
-        this.firstStepComputer = firstStepComputer;
+        this.firstStepComp = firstStepComputer;
         switch (level){
             case LEVEL_EASY:comp = new CompEasy();break;
             case LEVEL_HARD:comp = new CompHard();break;
@@ -106,7 +108,7 @@ public class TicTacToe {
         field.clearCells();
         stepX = true;
         isGame = true;
-        if(enemy == COMPUTER&&firstStepComputer)comp.stepComputer(field, Cell.X, Cell.O);
+        if(enemy == COMPUTER&& firstStepComp)comp.stepComputer(field, Cell.X, Cell.O);
     }
 
     /*** Сохранение и загрузка состояния ***/
@@ -115,19 +117,16 @@ public class TicTacToe {
         dataInt.add(enemy);
         dataInt.add(level);
         field.saveData(dataInt);
-        int [] array = new int[dataInt.size()];
-        for (int i = 0; i < array.length; i++) array[i] = dataInt.get(i);
-        return new Object[]{array,new boolean[]{isGame,stepX,firstStepComputer}};
+        return new Object[]{Tools.fromListToArray(dataInt),new boolean[]{isGame,stepX, firstStepComp}};
     }
 
     public void addData(int[] dataInt, boolean[] dataBoll){
         stepX = dataBoll[1];
         boolean firstStepComputer = dataBoll[2];
 
-        int enemy = dataInt[0];
-        int level = dataInt[1];
-        LinkedList<Integer> list = new LinkedList<>();
-        for(int i = 2;i < dataInt.length;i++)list.add(dataInt[i]);
+        LinkedList<Integer> list = Tools.fromArrayToLinkedList(dataInt);
+        int enemy = list.removeFirst();
+        int level = list.removeFirst();
         field.addData(list);
 
         switch (enemy){

@@ -8,10 +8,10 @@ import java.util.List;
 
 public class GameField {
 
-    private final int size = 3;
-    private  Cell[][] cells;
-    private CellCombs[] combs;
-    private Gui gui;
+    public static final int size = 3;
+    private final Cell[][]    cells;
+    private final List<CellCombs> combs;
+    private final Gui gui;
 
     public GameField(Gui gui) {
         this.gui =gui;
@@ -19,14 +19,13 @@ public class GameField {
         for (int l = 0; l != size; l++)
             for (int c = 0; c != size; c++) cells[l][c] = new Cell(l,c);
 
-        combs = new CellCombs[8];
-        for (int l = 0, c = 0; l < 6; l++, c++) {
-            if (l < 3) combs[l] = new CellCombs(cells[l][0], cells[l][1], cells[l][2]);
-            if (l == 3) c = 0;
-            if (l >= 3) combs[l] = new CellCombs(cells[0][c], cells[1][c], cells[2][c]);
+        combs = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            if (i < 3)combs.add(new CellCombs(cells[i][0], cells[i][1], cells[i][2]));
+            else      combs.add(new CellCombs(cells[0][i-3], cells[1][i-3], cells[2][i-3]));
         }
-        combs[6] = new CellCombs(cells[0][0], cells[1][1], cells[2][2]);
-        combs[7] = new CellCombs(cells[0][2], cells[1][1], cells[2][0]);
+        combs.add(new CellCombs(cells[0][0], cells[1][1], cells[2][2]));
+        combs.add(new CellCombs(cells[0][2], cells[1][1], cells[2][0]));
     }
 
     /*** Работа с клетками ***/
@@ -44,11 +43,11 @@ public class GameField {
         setCell(what,p.l,p.c);
     }
 
-    public int quantitySetCells() {
+    public int getNumberSetCells() {
         final List<Cell> list = new ArrayList<>();
         iterator(new IteratorLambda() {
-            public void item(Cell p) {
-                if (p.value != Cell.NONE) list.add(p);
+            public void item(Cell c) {
+                if (c.value != Cell.NONE) list.add(c);
             }
         });
         return list.size();
@@ -56,53 +55,52 @@ public class GameField {
 
     public void clearCells() {
         iterator(new IteratorLambda() {
-            public void item(Cell p) {
-                p.value = Cell.NONE;
+            public void item(Cell c) {
+                c.value = Cell.NONE;
             }
         });
         gui.clearAll();
     }
 
-    public CellCombs[] getCombs() { return combs; }
+    public List<CellCombs> getCombs() { return combs; }
 
     /*** Проверка победителя, конца игры ***/
     public int checkWinner(){
-        int winner = Cell.NONE;
-        for(CellCombs pn: combs){
-            if(pn.quantity(Cell.X)==size){winner = Cell.X;break;}
-            if(pn.quantity(Cell.O)==size){winner = Cell.O;break;}
+        for(CellCombs comb: combs){
+            if(comb.getNumbers(Cell.X)==size)return Cell.X;
+            if(comb.getNumbers(Cell.O)==size)return Cell.O;
         }
-        return winner;
+        return Cell.NONE;
     }
 
-    public boolean hasGap(){ return quantitySetCells()<(size*size); }
+    public boolean isSpace(){ return getNumberSetCells()<(size*size); }
 
     /*** Сохранение и загрузка состояния ***/
     public void saveData(final LinkedList<Integer> dataInt) {
         iterator(new IteratorLambda() {
-            public void item(Cell p) {
-                dataInt.add(p.value);
+            public void item(Cell c) {
+                dataInt.add(c.value);
             }
         });
     }
 
     public void addData(final LinkedList<Integer> dataInt){
         iterator(new IteratorLambda() {
-            public void item(Cell p) {
-                p.value = dataInt.removeFirst();
-                if(p.value == Cell.X)gui.setX(p.l,p.c);
-                if(p.value == Cell.O)gui.setO(p.l,p.c);
+            public void item(Cell c) {
+                c.value = dataInt.removeFirst();
+                if(c.value == Cell.X)gui.setX(c.l,c.c);
+                if(c.value == Cell.O)gui.setO(c.l,c.c);
             }
         });
     }
 
     private void iterator(IteratorLambda il){
-        for(int l = 0;l < 3;l++)
-            for(int c = 0;c < 3;c++)
+        for(int l = 0;l < size;l++)
+            for(int c = 0;c < size;c++)
                 il.item( cells[l][c]);
         }
 
     interface IteratorLambda{
-        void item(Cell b);
+        void item(Cell c);
     }
 }

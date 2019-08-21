@@ -3,7 +3,6 @@ package com.workout.metal.tictactoe;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,66 +21,60 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
     private final static String P_LEVEL     = "pl";
     private final static String P_UPDATE    = "pu";
 
-    private TicTacToe mTicTacToe;
-    private Button newGame;
+    private TicTacToe game;
     private TextView title;
     private GuiVersion1 gui;
-
-    private RadioGroup rg1;
-    private RadioGroup rg2;
-    private CheckBox cb;
+    private CheckBox firstStepComp;
 
     private int enemy;
     private int level;
     private boolean updateParam;
 
-    @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.app_content);
-        newGame = findViewById(R.id.new_game);
-        newGame.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.new_game).setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 if(updateParam){
-                    if(enemy == TicTacToe.PLAYER) mTicTacToe.vsPlayer();
-                    else mTicTacToe.vsComputer(cb.isChecked(),level);
+                    if(enemy == TicTacToe.PLAYER) game.vsPlayer();
+                    else game.vsComputer(firstStepComp.isChecked(),level);
                     updateParam = false;
                 }
-                mTicTacToe.newGame();
+                game.newGame();
                 if(enemy == TicTacToe.PLAYER)title.setText(R.string.player_vs_player);
                 else title.setText(R.string.player_vs_computer);
             }
         });
         title = findViewById(R.id.title);
 
-        rg1 = findViewById(R.id.rg1);
-        rg2 = findViewById(R.id.rg2);
+        RadioGroup rg1 = findViewById(R.id.rg1);
         rg1.setOnCheckedChangeListener(this);
+        RadioGroup rg2 = findViewById(R.id.rg2);
         rg2.setOnCheckedChangeListener(this);
         rg2.setVisibility(View.INVISIBLE);
-        cb = findViewById(R.id.cb);
-        cb.setVisibility(View.INVISIBLE);
-        cb.setOnClickListener(new View.OnClickListener() {
+        firstStepComp = findViewById(R.id.cb);
+        firstStepComp.setVisibility(View.INVISIBLE);
+        firstStepComp.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 updateParam = true;
             }
         });
 
         gui = new GuiVersion1(this);
-        mTicTacToe = new TicTacToe(gui,this);
+        game = new TicTacToe(gui,this);
 
         if(bundle==null){
             enemy = TicTacToe.PLAYER;
             level = TicTacToe.LEVEL_EASY;
             title.setText(R.string.player_vs_player);
-            mTicTacToe.vsPlayer();
-            mTicTacToe.newGame();
+            game.vsPlayer();
+            game.newGame();
         } else {
             title.setText(bundle.getString(TITLE));
             enemy = bundle.getInt(P_ENEMY);
             level = bundle.getInt(P_LEVEL);
             updateParam = bundle.getBoolean(P_UPDATE);
-            mTicTacToe.addData(
+            game.addData(
                     bundle.getIntArray(ENGINE_INT),
                     bundle.getBooleanArray(ENGINE_BOOL)
             );
@@ -89,47 +82,52 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
     }
 
     public void fieldClick(View view){
-        int[]lc = gui.onClick(view);
-        mTicTacToe.fieldClick(lc[0],lc[1]);
+        GuiVersion1.CellView cv = gui.onClick(view);
+        game.fieldClick(cv.l,cv.c);
     }
 
-    public void gameEvent(int type) {
-        switch (type){
-            case GameEvent.WINNER_PLAYER_X:
-                title.setText(R.string.win_x); break;
-            case GameEvent.WINNER_PLAYER_O:
-                title.setText(R.string.win_o); break;
-            case GameEvent.WINNER_PLAYER:
-                title.setText(R.string.win_player);break;
-            case GameEvent.WINNER_COMPUTER:
-                title.setText(R.string.win_computer);break;
-            case GameEvent.NO_SPACE:
-                title.setText(R.string.no_winner);break;
+    public void gameEvent(Event event) {
+        switch (event){
+            case WINNER_PLAYER_X:
+                title.setText(R.string.win_x);
+                break;
+            case WINNER_PLAYER_O:
+                title.setText(R.string.win_o);
+                break;
+            case WINNER_PLAYER:
+                title.setText(R.string.win_player);
+                break;
+            case WINNER_COMPUTER:
+                title.setText(R.string.win_computer);
+                break;
+            case NO_SPACE:
+                title.setText(R.string.no_winner);
+                break;
         }
     }
 
-    @Override
     public void onCheckedChanged(RadioGroup radioGroup, int rbId) {
         System.out.println(rbId);
-        if(radioGroup == rg1){
+        if(radioGroup.getId() == R.id.rg1){
+            RadioGroup rg2 = findViewById(R.id.rg2);
             switch (rbId){
                 case R.id.rb1:
                     rg2.setVisibility(View.INVISIBLE);
-                    cb.setVisibility(View.INVISIBLE);
+                    firstStepComp.setVisibility(View.INVISIBLE);
                     enemy = TicTacToe.PLAYER;
                     break;
                 case R.id.rb2:
                     rg2.setVisibility(View.VISIBLE);
-                    cb.setVisibility(View.VISIBLE);
+                    firstStepComp.setVisibility(View.VISIBLE);
                     enemy = TicTacToe.COMPUTER;
-                    cb.setChecked(false);
+                    firstStepComp.setChecked(false);
                     RadioButton rb = findViewById(R.id.rb3);
                     rb.setChecked(true);
                     level = TicTacToe.LEVEL_EASY;
                     break;
             }
         }
-        if(radioGroup == rg2){
+        if(radioGroup.getId() == R.id.rg2){
             switch (rbId){
                 case R.id.rb3:level = TicTacToe.LEVEL_EASY;break;
                 case R.id.rb4:level = TicTacToe.LEVEL_HARD;break;
@@ -140,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements GameEvent, RadioG
 
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Object [] data = mTicTacToe.saveData();
+        Object [] data = game.saveData();
         outState.putIntArray(ENGINE_INT, (int[]) data[0]);
         outState.putBooleanArray(ENGINE_BOOL, (boolean[]) data[1]);
         outState.putString(TITLE, String.valueOf(title.getText()));

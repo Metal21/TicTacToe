@@ -6,8 +6,8 @@ public class Cell {
     public final static int X = 1;
     public final static int O = 2;
 
-    public int value;// 0 - none 1 - X 2 - O
-    public int l,c;
+    public int value;
+    public final int l,c;
 
-    Cell(int l, int c){this.l = l;this.c = c;}
+    Cell(int line, int column){this.l = line;this.c = column;}
 }
